@@ -31,6 +31,8 @@ diagonal lines, starting from central line | -
  - from two-third-height > down, right of image
  - from two-third-height > down, left of image
 """
+from copy import deepcopy
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -75,6 +77,7 @@ class CistercianSymbol:
         range_v = range(start_v, end_v, step_v)
         for h, v in zip(range_h, range_v):
             self.symbol[v, h] = 1
+        self.symbol[end_v, max(0, end_h-1)] = 1
 
     def _get_height(self, height_str: str) -> int:
         if height_str == TOP:
@@ -107,17 +110,37 @@ class CistercianSymbol:
     def add_central_full_vertical_line(self):
         self.add_vertical_line(width_str=MIDDLE, start_str=TOP, end_str=BOTTOM)
 
-    def add_horizontal_line(self, height_str=TOP, direction_str=LEFT):
+    def add_horizontal_line(self, location_str=TOP, direction_str=LEFT):
         """ add a horizontal line at 'height', starting from central vertical line, going in 'direction'"""
-        location = self._get_height(height_str)
+        location = self._get_height(location_str)
         location = min(location, self.height - 1)  # to take care of location on bottom index
         start_str, end_str = (MIDDLE, RIGHT) if direction_str == RIGHT else (LEFT, MIDDLE)
         start, end = self._get_width(start_str), self._get_width(end_str)
         self._add_horizontal_line(start, end, location)
 
+    def add_diagonal_line(self, start_height_on_middle=TOP, end_height=TOP_THIRD, direction_str=LEFT):
+        """ diagonals start from center and go outwards """
+        start_h = self._get_width(MIDDLE)
+        end_h = self._get_width(direction_str)
+        start_v = self._get_height(start_height_on_middle)
+        end_v = self._get_height(end_height)
+        self._add_diagonal_line(start_h, end_h, start_v, end_v)
+
     def get_value(self):
         # TODO: return the value of a symbol from mapping
         pass
+
+    def fliplr(self):
+        """ flip the symbol left-right - return a copy """
+        flipped = deepcopy(self)
+        flipped.symbol = np.fliplr(flipped.symbol)
+        return flipped
+
+    def flipud(self):
+        """ flip the symbol up-down - return a copy """
+        flipped = deepcopy(self)
+        flipped.symbol = np.flipud(flipped.symbol)
+        return flipped
 
 
 class CistercianNumber:
