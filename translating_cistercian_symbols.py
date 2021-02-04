@@ -48,7 +48,7 @@ class CistercianNumber(Symbol):
 
 
 def arabic_to_cistercian(arabic_number: int) -> CistercianNumber:
-    cistercian_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH) 
+    cistercian_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
     order = 0
     while arabic_number > 0:
         value = arabic_number % 10 * pow(10, order)
@@ -58,3 +58,23 @@ def arabic_to_cistercian(arabic_number: int) -> CistercianNumber:
         cistercian_number.add_symbol(symbol_for_value)
         
     return cistercian_number
+
+
+def cistercian_to_arabic(cistercian: CistercianNumber, symbol_mapping: dict) -> int:
+    """
+    convert cistercian number to arabic number by comparing symbol, without using 'value' property
+    assumption: the given cistercian number is of the same shape as the mapping
+    """
+    # TODO: validate assumption
+
+    number = 0
+    given_symbol = cistercian.get_symbol()
+    for value, symbol in symbol_mapping.items():
+        current_symbol = symbol.get_symbol()
+        # get an overlap of current symbol with the given symbol
+        symbol_overlap = given_symbol[current_symbol]
+        # if the overlap is complete - the curent symbol is contained in the given symbol
+        if symbol_overlap.sum() == current_symbol.sum():
+            number += value
+
+    return number

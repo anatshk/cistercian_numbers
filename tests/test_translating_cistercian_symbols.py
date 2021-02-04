@@ -48,8 +48,8 @@ class TestCistercianNumber(unittest.TestCase):
             final_number.add_symbol(two)
 
 
-class TestTranslatingCistercianSymbols(unittest.TestCase):
-    def test_arabic_to_cistercian_4_digits(self):
+class TestArabicToCistercian(unittest.TestCase):
+    def test_4_digits(self):
         number = 1993
         cistercian = arabic_to_cistercian(number)
         expected_symbol = np.array([
@@ -64,7 +64,7 @@ class TestTranslatingCistercianSymbols(unittest.TestCase):
         self.assertEqual(cistercian.value, number)
         np.testing.assert_array_equal(cistercian.get_symbol(), expected_symbol)
 
-    def test_arabic_to_cistercian_3_digits(self):
+    def test_3_digits(self):
         number = 2047
         cistercian = arabic_to_cistercian(number)
         expected_symbol = np.array([
@@ -79,7 +79,7 @@ class TestTranslatingCistercianSymbols(unittest.TestCase):
         self.assertEqual(cistercian.value, number)
         np.testing.assert_array_equal(cistercian.get_symbol(), expected_symbol)
 
-    def test_arabic_to_cistercian_2_digits(self):
+    def test_2_digits(self):
         number = 6002
         cistercian = arabic_to_cistercian(number)
         expected_symbol = np.array([
@@ -94,4 +94,32 @@ class TestTranslatingCistercianSymbols(unittest.TestCase):
         self.assertEqual(cistercian.value, number)
         np.testing.assert_array_equal(cistercian.get_symbol(), expected_symbol)
 
+    def test_zero(self):
+        # TODO: number = 0
+        self.assertTrue(False)
 
+    def test_number_out_of_range(self):
+        # TODO: number < 0 or number > 9999 - raise exception
+        self.assertTrue(False)
+
+
+class TestCistercianToArabic(unittest.TestCase):
+    def test_2_symbol(self):
+        # TODO: select single symbol and test
+        self.assertTrue(False)
+
+    def test_2_symbols(self):
+        # TODO: select 2 symbols combination and test
+        self.assertTrue(False)
+
+    def test_3_symbols(self):
+        # TODO: select 3 symbols combination and test
+        self.assertTrue(False)
+
+    def test_4_symbols(self):
+        # TODO: select 4 symbols combination and test
+        self.assertTrue(False)
+
+    def test_unknown_symbol(self):
+        # TODO: create an unsupported symbol and test - raise exception
+        self.assertTrue(False)
