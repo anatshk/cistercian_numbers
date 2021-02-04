@@ -101,6 +101,7 @@ class CistercianSymbol:
         end = self._get_height(end_str)
         start, end = (start, end) if start < end else (end, start)  # vertical axis is confusing
         location = self._get_width(width_str)
+        location = min(location, self.width - 1)  # to take care of location on end index
         self._add_vertical_line(start, end, location)
 
     def add_central_full_vertical_line(self):
@@ -108,10 +109,11 @@ class CistercianSymbol:
 
     def add_horizontal_line(self, height_str=TOP, direction_str=LEFT):
         """ add a horizontal line at 'height', starting from central vertical line, going in 'direction'"""
-        height = self._get_height(height_str)
+        location = self._get_height(height_str)
+        location = min(location, self.height - 1)  # to take care of location on bottom index
         start_str, end_str = (MIDDLE, RIGHT) if direction_str == RIGHT else (LEFT, MIDDLE)
         start, end = self._get_width(start_str), self._get_width(end_str)
-        self._add_horizontal_line(start, end, height)
+        self._add_horizontal_line(start, end, location)
 
     def get_value(self):
         # TODO: return the value of a symbol from mapping
