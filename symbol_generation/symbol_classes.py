@@ -47,30 +47,43 @@ UP = 'up'
 DOWN = 'down'
 
 
-class CistercianSymbol:
-    def __init__(self, height, width, is_zero=False):
+class Symbol:
+    def __init__(self, height, width):
+        self.height = height
+        self.width = width
+        self.symbol = np.zeros(shape=(height, width))
+
+
+class CistercianSymbol(Symbol):
+    def __init__(self, height: int, width: int, is_zero: bool = False):
+        super().__init__(height, width)
         self.height = height
         self.width = width
         self.third_height = height // 3
         self.mid_width = width // 2
-        self.symbol = np.zeros(shape=(height, width))
         if not is_zero:  # all symbols have a central line
             self.add_central_full_vertical_line()
 
-    def __repr__(self):
-        return f"CistercianSymbol({self.height}, {self.width})"
+    def set_symbol(self, new_symbol: np.ndarray):
+        self.symbol = new_symbol
+
+    def get_symbol(self):
+        return self.symbol
 
     def show(self):
         plt.imshow(1 - self.symbol, cmap='gray')
         plt.show()
 
-    def _add_vertical_line(self, start, end, x):
+    def __repr__(self) -> str:
+        return f"CistercianSymbol({self.height}, {self.width})"
+
+    def _add_vertical_line(self, start: int, end: int, x: int):
         self.symbol[start:end, x] = 1
 
-    def _add_horizontal_line(self, start, end, y):
+    def _add_horizontal_line(self, start: int, end: int, y: int):
         self.symbol[y, start:end] = 1
 
-    def _add_diagonal_line(self, start_h, end_h, start_v, end_v):
+    def _add_diagonal_line(self, start_h: int, end_h: int, start_v: int, end_v: int):
         step_h = int((int(start_h < end_h) - 1 / 2) * 2)  # convert 0/1 to -1/1
         step_v = int((int(start_v < end_v) - 1 / 2) * 2)  # convert 0/1 to -1/1
         range_h = range(start_h, end_h, step_h)
@@ -90,7 +103,7 @@ class CistercianSymbol:
             return 2 * self.third_height
         raise Exception(f'Unexpected height string {height_str}')
 
-    def _get_width(self, width_str: str):
+    def _get_width(self, width_str: str) -> int:
         if width_str == LEFT:
             return 0
         if width_str == RIGHT:
@@ -99,7 +112,7 @@ class CistercianSymbol:
             return self.mid_width
         raise Exception(f'Unexpected width string {width_str}')
 
-    def add_vertical_line(self, width_str=MIDDLE, start_str=TOP, end_str=BOTTOM):
+    def add_vertical_line(self, width_str: str = MIDDLE, start_str: str = TOP, end_str: str = BOTTOM):
         start = self._get_height(start_str)
         end = self._get_height(end_str)
         start, end = (start, end) if start < end else (end, start)  # vertical axis is confusing
@@ -110,7 +123,7 @@ class CistercianSymbol:
     def add_central_full_vertical_line(self):
         self.add_vertical_line(width_str=MIDDLE, start_str=TOP, end_str=BOTTOM)
 
-    def add_horizontal_line(self, location_str=TOP, direction_str=LEFT):
+    def add_horizontal_line(self, location_str: str = TOP, direction_str: str = LEFT):
         """ add a horizontal line at 'height', starting from central vertical line, going in 'direction'"""
         location = self._get_height(location_str)
         location = min(location, self.height - 1)  # to take care of location on bottom index
@@ -118,7 +131,7 @@ class CistercianSymbol:
         start, end = self._get_width(start_str), self._get_width(end_str)
         self._add_horizontal_line(start, end, location)
 
-    def add_diagonal_line(self, start_height_on_middle=TOP, end_height=TOP_THIRD, direction_str=LEFT):
+    def add_diagonal_line(self, start_height_on_middle: str = TOP, end_height: str = TOP_THIRD, direction_str: str = LEFT):
         """ diagonals start from center and go outwards """
         start_h = self._get_width(MIDDLE)
         end_h = self._get_width(direction_str)
@@ -126,34 +139,25 @@ class CistercianSymbol:
         end_v = self._get_height(end_height)
         self._add_diagonal_line(start_h, end_h, start_v, end_v)
 
-    def get_value(self):
-        # TODO: return the value of a symbol from mapping
-        pass
+    def get_value(self, mapping: dict) -> int:
+        value = None
+        for value, symbol in mapping.items():  # O(M) - always going over the same mapping --> O(1)
+            diff_symbols = self.get_symbol() - symbol.get_symbol()
+            if not diff_symbols.any():
+                break
 
-    def fliplr(self):
+        if value is None:
+            raise Exception(f'Unexpected symbol - does not match any symbol in existing mapping')
+        return value
+
+    def fliplr(self) -> "CistercianSymbol":
         """ flip the symbol left-right - return a copy """
         flipped = deepcopy(self)
-        flipped.symbol = np.fliplr(flipped.symbol)
+        flipped.symbol = np.fliplr(flipped.get_symbol())
         return flipped
 
-    def flipud(self):
+    def flipud(self) -> "CistercianSymbol":
         """ flip the symbol up-down - return a copy """
         flipped = deepcopy(self)
-        flipped.symbol = np.flipud(flipped.symbol)
+        flipped.symbol = np.flipud(flipped.get_symbol())
         return flipped
-
-
-class CistercianNumber:
-    def __init__(self, height, width):
-        self.height = height
-        self.width = width
-        self.symbol = CistercianSymbol(height=height, width=width, is_zero=True)
-        self.order_used = [False, False, False, False]
-        self.value = 0
-
-    def add_symbol(self, symbol):
-        # TODO:
-        #  check if we can add this symbol
-        #  update symbol by max on self
-        pass
-

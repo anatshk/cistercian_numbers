@@ -20,7 +20,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_1(self):
         symbol = self.mapping[1]
@@ -33,7 +33,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_2(self):
         symbol = self.mapping[2]
@@ -46,7 +46,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_3(self):
         symbol = self.mapping[3]
@@ -59,7 +59,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_4(self):
         symbol = self.mapping[4]
@@ -72,7 +72,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_5(self):
         symbol = self.mapping[5]
@@ -85,7 +85,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_6(self):
         symbol = self.mapping[6]
@@ -98,7 +98,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_7(self):
         symbol = self.mapping[7]
@@ -111,7 +111,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_8(self):
         symbol = self.mapping[8]
@@ -124,7 +124,7 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)
 
     def test_9(self):
         symbol = self.mapping[9]
@@ -137,4 +137,4 @@ class TestSymbolMapping(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol)

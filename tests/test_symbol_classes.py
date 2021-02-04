@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 
 from symbol_generation.symbol_classes import CistercianSymbol, TOP, BOTTOM, TOP_THIRD, BOTTOM_THIRD, LEFT, RIGHT, MIDDLE
+from symbol_generation.symbol_mapping import create_symbols
 
 
 class TestCistercianSymbol(unittest.TestCase):
@@ -13,12 +14,12 @@ class TestCistercianSymbol(unittest.TestCase):
             [0, 0, 1, 0, 0],
             [0, 0, 1, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol_array)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol_array)
 
     def test_init_zero(self):
         symbol = CistercianSymbol(height=4, width=5, is_zero=True)
         expected_symbol_array = np.zeros(shape=(4, 5))
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol_array)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol_array)
 
     def test_add_vertical_line_private(self):
         symbol = CistercianSymbol(height=4, width=5, is_zero=True)
@@ -29,7 +30,7 @@ class TestCistercianSymbol(unittest.TestCase):
             [0, 0, 0, 1, 0],
             [0, 0, 0, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol_array)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol_array)
 
     def test_add_horizontal_line_private(self):
         symbol = CistercianSymbol(height=4, width=5, is_zero=True)
@@ -40,29 +41,29 @@ class TestCistercianSymbol(unittest.TestCase):
             [0, 1, 1, 0, 0],
             [0, 0, 0, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol_array)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol_array)
 
     def test_add_diagonal_line_private_up(self):
         symbol = CistercianSymbol(height=4, width=5, is_zero=True)
-        symbol._add_diagonal_line(start_h=0, end_h=2, start_v=2, end_v=0)
+        symbol._add_diagonal_line(start_h=0, end_h=3, start_v=2, end_v=0)
         expected_symbol_array = np.array([
-            [0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0],
             [0, 1, 0, 0, 0],
             [1, 0, 0, 0, 0],
             [0, 0, 0, 0, 0],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol_array)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol_array)
 
     def test_add_diagonal_line_private_down(self):
         symbol = CistercianSymbol(height=4, width=5, is_zero=True)
-        symbol._add_diagonal_line(start_h=1, end_h=4, start_v=0, end_v=3)
+        symbol._add_diagonal_line(start_h=1, end_h=5, start_v=0, end_v=3)
         expected_symbol_array = np.array([
             [0, 1, 0, 0, 0],
             [0, 0, 1, 0, 0],
             [0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1],
         ])
-        np.testing.assert_array_equal(symbol.symbol, expected_symbol_array)
+        np.testing.assert_array_equal(symbol.get_symbol(), expected_symbol_array)
 
     def test_get_height(self):
         symbol = CistercianSymbol(height=14, width=5, is_zero=True)
@@ -83,3 +84,7 @@ class TestCistercianSymbol(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'Unexpected width string'):
             symbol._get_width('no such')
 
+    def test_get_value(self):
+        symbol_mapping = create_symbols(symbol_height=7, symbol_width=5)
+        for val in [5, 70, 300, 6000, 0]:
+            self.assertEqual(symbol_mapping[val].get_value(symbol_mapping), val)
