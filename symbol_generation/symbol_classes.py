@@ -74,7 +74,7 @@ class CistercianSymbol:
         range_h = range(start_h, end_h, step_h)
         range_v = range(start_v, end_v, step_v)
         for h, v in zip(range_h, range_v):
-            self.symbol[h, v] = 1
+            self.symbol[v, h] = 1
 
     def _get_height(self, height_str: str) -> int:
         if height_str == TOP:
