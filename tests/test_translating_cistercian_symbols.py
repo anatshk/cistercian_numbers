@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from symbol_generation.symbol_mapping import create_symbols
-from translating_cistercian_symbols import CistercianNumber, SYMBOL_WIDTH, SYMBOL_HEIGHT
+from translating_cistercian_symbols import CistercianNumber, SYMBOL_WIDTH, SYMBOL_HEIGHT, arabic_to_cistercian
 
 SYMBOL_MAPPING = create_symbols(symbol_height=7, symbol_width=5)
 
@@ -49,5 +49,49 @@ class TestCistercianNumber(unittest.TestCase):
 
 
 class TestTranslatingCistercianSymbols(unittest.TestCase):
-    def test_arabic_to_cistercian(self):
-        pass
+    def test_arabic_to_cistercian_4_digits(self):
+        number = 1993
+        cistercian = arabic_to_cistercian(number)
+        expected_symbol = np.array([
+            [1, 1, 1, 0, 0],
+            [1, 0, 1, 1, 0],
+            [1, 1, 1, 0, 1],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 1, 1],
+            [0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1],
+        ])
+        self.assertEqual(cistercian.value, number)
+        np.testing.assert_array_equal(cistercian.get_symbol(), expected_symbol)
+
+    def test_arabic_to_cistercian_3_digits(self):
+        number = 2047
+        cistercian = arabic_to_cistercian(number)
+        expected_symbol = np.array([
+            [1, 0, 1, 1, 1],
+            [0, 1, 1, 0, 1],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [1, 1, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+        ])
+        self.assertEqual(cistercian.value, number)
+        np.testing.assert_array_equal(cistercian.get_symbol(), expected_symbol)
+
+    def test_arabic_to_cistercian_2_digits(self):
+        number = 6002
+        cistercian = arabic_to_cistercian(number)
+        expected_symbol = np.array([
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 1, 1],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [1, 0, 1, 0, 0],
+            [1, 0, 1, 0, 0],
+        ])
+        self.assertEqual(cistercian.value, number)
+        np.testing.assert_array_equal(cistercian.get_symbol(), expected_symbol)
+
+
