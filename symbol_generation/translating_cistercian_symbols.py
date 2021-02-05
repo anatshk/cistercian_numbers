@@ -55,22 +55,53 @@ class CistercianNumber(Symbol):
             self.value += symbol_value
 
 
-def arabic_to_cistercian(arabic_number: int) -> CistercianNumber:
+def arabic_to_cistercian(arabic_number: int, symbol_height: int = SYMBOL_HEIGHT, symbol_width: int = SYMBOL_WIDTH,
+                         symbol_mapping: dict = None) -> CistercianNumber:
     assert isinstance(arabic_number, int) or arabic_number == int(arabic_number), \
         f"Unsupported input, only int supported, got {arabic_number}"
 
     assert 0 <= arabic_number <= 9999, f"Number out of range, supported range is [0, 9999], got {arabic_number}"
 
-    cistercian_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+    if symbol_mapping is None:
+        symbol_mapping = SYMBOL_MAPPING
+
+    cistercian_number = CistercianNumber(height=symbol_height, width=symbol_width)
     order = 0
     while arabic_number > 0:
         value = arabic_number % 10 * pow(10, order)
         arabic_number = arabic_number // 10
         order += 1
-        symbol_for_value = SYMBOL_MAPPING[value]
+        symbol_for_value = symbol_mapping[value]
         cistercian_number.add_symbol(symbol_for_value)
         
     return cistercian_number
+
+
+def _validate_cistercian_number_size(cistercian: CistercianNumber, symbol_mapping: dict):
+    symbol_shape = cistercian.get_symbol().shape
+    mapping_shape = symbol_mapping[0].get_symbol().shape
+    assert symbol_shape == mapping_shape, \
+        f"Size mismatch between symbol and mapping, symbol shape: {symbol_shape}, mapping shape: {mapping_shape}"
+
+
+def _find_symbols_contained_in_given_symbol(given_symbol: np.ndarray, symbol_mapping: dict) -> list:
+    symbol_candidates = [None, None, None, None]
+    for value, symbol in symbol_mapping.items():
+        current_symbol = symbol.get_symbol()
+        # get an overlap of current symbol with the given symbol
+        symbol_overlap = given_symbol * current_symbol
+        # if the overlap is complete - the current symbol is contained in the given symbol
+        curr_symbol_size = current_symbol.sum()
+        # some symbols are contained within others (1000 and 9000), in these cases we want to make sure that
+        # we take the candidate with the larger overlap of the original symbol
+        if symbol_overlap.sum() == curr_symbol_size and curr_symbol_size > 0:
+            candidate_order = int(np.log10(value))
+            if symbol_candidates[candidate_order] is None or symbol_candidates[candidate_order][1] < curr_symbol_size:
+                # first candidate of this order --> save value and size of current candidate
+                # OR, candidate of this order already exists - override if current candidate is larger
+                symbol_candidates[candidate_order] = (value, curr_symbol_size)
+
+    return symbol_candidates
 
 
 def cistercian_to_arabic(cistercian: CistercianNumber, symbol_mapping: dict) -> int:
@@ -78,16 +109,14 @@ def cistercian_to_arabic(cistercian: CistercianNumber, symbol_mapping: dict) -> 
     convert cistercian number to arabic number by comparing symbol, without using 'value' property
     assumption: the given cistercian number is of the same shape as the mapping
     """
-    # TODO: validate assumption
+    _validate_cistercian_number_size(cistercian, symbol_mapping)
 
-    number = 0
     given_symbol = cistercian.get_symbol()
-    for value, symbol in symbol_mapping.items():
-        current_symbol = symbol.get_symbol()
-        # get an overlap of current symbol with the given symbol
-        symbol_overlap = given_symbol[current_symbol]
-        # if the overlap is complete - the curent symbol is contained in the given symbol
-        if symbol_overlap.sum() == current_symbol.sum():
-            number += value
+    symbol_candidates = _find_symbols_contained_in_given_symbol(given_symbol, symbol_mapping)
+
+    # sum all candidate values
+    number = 0
+    for candidate_value in symbol_candidates:
+        number += candidate_value[0] if candidate_value is not None else 0
 
     return number

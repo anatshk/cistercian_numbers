@@ -1,9 +1,10 @@
 import unittest
 import numpy as np
 
-from symbol_generation.symbol_classes import CistercianSymbol, TOP, RIGHT
+from symbol_generation.symbol_classes import CistercianSymbol
 from symbol_generation.symbol_mapping import create_symbols
-from translating_cistercian_symbols import CistercianNumber, SYMBOL_WIDTH, SYMBOL_HEIGHT, arabic_to_cistercian
+from symbol_generation.translating_cistercian_symbols import CistercianNumber, SYMBOL_WIDTH, SYMBOL_HEIGHT, \
+    arabic_to_cistercian, cistercian_to_arabic, _validate_cistercian_number_size
 
 SYMBOL_MAPPING = create_symbols(symbol_height=7, symbol_width=5)
 
@@ -86,9 +87,129 @@ class TestCistercianNumber(unittest.TestCase):
         number_2 = CistercianNumber(height=SYMBOL_HEIGHT * 2, width=SYMBOL_WIDTH * 2)
         self.assertNotEqual(number_1, number_2)
 
+    def test_equal_1_symbol(self):
+        # single symbol - 1000
+        symbol = np.array([
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [1, 1, 1, 0, 0],
+        ])
+        symbol_instance = CistercianSymbol(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        symbol_instance.set_symbol(symbol)
+        number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        number.add_symbol(symbol_instance)
 
+        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        expected_number.add_symbol(SYMBOL_MAPPING[1000])
+        self.assertEqual(expected_number, number)
 
+    def test_equal_2_symbols(self):
+        # two symbols - 1000 + 30
+        symbol = np.array([
+            [0, 0, 1, 0, 0],
+            [0, 1, 1, 0, 0],
+            [1, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [1, 1, 1, 0, 0],
+        ])
+        # manually override the attributes of number
+        number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        number.symbol.set_symbol(symbol)
+        number.value = 1030
+        number.order_used = [False, True, False, True]
 
+        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        expected_number.add_symbol(SYMBOL_MAPPING[1000])
+        expected_number.add_symbol(SYMBOL_MAPPING[30])
+        self.assertEqual(expected_number, number)
+
+    def test_equal_3_symbols(self):
+        # 3 symbols - 1000 + 30 + 700
+        symbol = np.array([
+            [0, 0, 1, 0, 0],
+            [0, 1, 1, 0, 0],
+            [1, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1],
+        ])
+        # manually override the attributes of number
+        number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        number.symbol.set_symbol(symbol)
+        number.value = 1730
+        number.order_used = [False, True, True, True]
+
+        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        expected_number.add_symbol(SYMBOL_MAPPING[1000])
+        expected_number.add_symbol(SYMBOL_MAPPING[30])
+        expected_number.add_symbol(SYMBOL_MAPPING[700])
+        self.assertEqual(expected_number, number)
+
+    def test_equal_4_symbols(self):
+        # 4 symbols - 1000 + 30 + 700 + 5
+        symbol = np.array([
+            [0, 0, 1, 1, 1],
+            [0, 1, 1, 1, 0],
+            [1, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1],
+        ])
+        # manually override the attributes of number
+        number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        number.symbol.set_symbol(symbol)
+        number.value = 1735
+        number.order_used = [True, True, True, True]
+
+        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        expected_number.add_symbol(SYMBOL_MAPPING[1000])
+        expected_number.add_symbol(SYMBOL_MAPPING[30])
+        expected_number.add_symbol(SYMBOL_MAPPING[700])
+        expected_number.add_symbol(SYMBOL_MAPPING[5])
+        self.assertEqual(expected_number, number)
+
+    def test_equal_unknown_symbol(self):
+        # unknown symbol - 3 full parallel vertical lines
+        symbol = np.array([
+            [1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1],
+        ])
+        symbol_instance = CistercianSymbol(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        symbol_instance.set_symbol(symbol)
+        number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+
+        with self.assertRaisesRegex(Exception, "Unexpected symbol - does not match any symbol in existing mapping"):
+            number.add_symbol(symbol_instance)
+
+    def test_equal_zero(self):
+        # test with zero symbol (empty array)
+        symbol = np.array([
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+        ])
+        symbol_instance = CistercianSymbol(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        symbol_instance.set_symbol(symbol)
+        number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
+        self.assertEqual(expected_number, number)
 
 
 class TestArabicToCistercian(unittest.TestCase):
@@ -181,9 +302,9 @@ class TestCistercianToArabic(unittest.TestCase):
         number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
         number.add_symbol(symbol_instance)
 
-        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
-        expected_number.add_symbol(SYMBOL_MAPPING[1000])
-        self.assertEqual(expected_number, number)
+        arabic = cistercian_to_arabic(number, SYMBOL_MAPPING)
+        expected_arabic = 1000
+        self.assertEqual(expected_arabic, arabic)
 
     def test_2_symbols(self):
         # two symbols - 1000 + 30
@@ -202,10 +323,9 @@ class TestCistercianToArabic(unittest.TestCase):
         number.value = 1030
         number.order_used = [False, True, False, True]
 
-        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
-        expected_number.add_symbol(SYMBOL_MAPPING[1000])
-        expected_number.add_symbol(SYMBOL_MAPPING[30])
-        self.assertEqual(expected_number, number)
+        arabic = cistercian_to_arabic(number, SYMBOL_MAPPING)
+        expected_arabic = 1030
+        self.assertEqual(expected_arabic, arabic)
 
     def test_3_symbols(self):
         # 3 symbols - 1000 + 30 + 700
@@ -224,11 +344,9 @@ class TestCistercianToArabic(unittest.TestCase):
         number.value = 1730
         number.order_used = [False, True, True, True]
 
-        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
-        expected_number.add_symbol(SYMBOL_MAPPING[1000])
-        expected_number.add_symbol(SYMBOL_MAPPING[30])
-        expected_number.add_symbol(SYMBOL_MAPPING[700])
-        self.assertEqual(expected_number, number)
+        arabic = cistercian_to_arabic(number, SYMBOL_MAPPING)
+        expected_arabic = 1730
+        self.assertEqual(expected_arabic, arabic)
 
     def test_4_symbols(self):
         # 4 symbols - 1000 + 30 + 700 + 5
@@ -247,12 +365,9 @@ class TestCistercianToArabic(unittest.TestCase):
         number.value = 1735
         number.order_used = [True, True, True, True]
 
-        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
-        expected_number.add_symbol(SYMBOL_MAPPING[1000])
-        expected_number.add_symbol(SYMBOL_MAPPING[30])
-        expected_number.add_symbol(SYMBOL_MAPPING[700])
-        expected_number.add_symbol(SYMBOL_MAPPING[5])
-        self.assertEqual(expected_number, number)
+        arabic = cistercian_to_arabic(number, SYMBOL_MAPPING)
+        expected_arabic = 1735
+        self.assertEqual(expected_arabic, arabic)
 
     def test_unknown_symbol(self):
         # unknown symbol - 3 full parallel vertical lines
@@ -286,6 +401,13 @@ class TestCistercianToArabic(unittest.TestCase):
         symbol_instance = CistercianSymbol(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
         symbol_instance.set_symbol(symbol)
         number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
-        expected_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
-        self.assertEqual(expected_number, number)
+        arabic = cistercian_to_arabic(number, SYMBOL_MAPPING)
+        expected_arabic = 0
+        self.assertEqual(expected_arabic, arabic)
 
+
+class TestValidateCistercianNumberSize(unittest.TestCase):
+    def test_validate_cistercian_number_size(self):
+        number = CistercianNumber(height=50, width=50)
+        with self.assertRaisesRegex(AssertionError, "Size mismatch between symbol and mapping"):
+            _validate_cistercian_number_size(number, SYMBOL_MAPPING)
