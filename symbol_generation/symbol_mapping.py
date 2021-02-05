@@ -127,7 +127,7 @@ def show_mapping(symbol_mapping: dict):
     for order in range(4):
         for digit_ix in range(0, 9):
             value = (digit_ix + 1) * pow(10, order)
-            ax[order, digit_ix].imshow(symbol_mapping[value].get_symbol(), cmap='gray')
+            ax[order, digit_ix].imshow(1 - symbol_mapping[value].get_symbol(), cmap='gray')
             ax[order, digit_ix].title.set_text(str(value))
             ax[order, digit_ix].axes.xaxis.set_visible(False)
             ax[order, digit_ix].axes.yaxis.set_visible(False)
