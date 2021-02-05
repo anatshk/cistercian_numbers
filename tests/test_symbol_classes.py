@@ -115,3 +115,31 @@ class TestCistercianSymbol(unittest.TestCase):
         symbol_2.add_horizontal_line(location_str=TOP, direction_str=LEFT)
 
         self.assertNotEqual(symbol_1, symbol_2)
+
+
+class TestDifferentHeightWidth(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.mapping_7_5 = create_symbols(symbol_height=7, symbol_width=5)
+        cls.mapping_17_15 = create_symbols(symbol_height=17, symbol_width=15)
+
+    def test_sanity_height_7_width_5(self):
+        symbol_1 = np.array([
+            [0, 0, 1, 1, 1],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+        ])
+        self.assertEqual(self.mapping_7_5[1].get_symbol(), symbol_1)
+
+        # TODO: test that the symbols 1-9 are displayed as expected (compare to manually created arrays)
+        self.assertTrue(False)
+
+    def test_sanity_height_17_width_15(self):
+        # TODO: create a symbol mapping of size 17,15
+        #  test that the symbols 1-9 are displayed as expected (compare to manually created arrays)
+        self.assertTrue(False)
+
