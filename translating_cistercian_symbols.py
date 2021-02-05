@@ -19,6 +19,14 @@ class CistercianNumber(Symbol):
         self.order_used = [False, False, False, False]
         self.value = 0
 
+    def __eq__(self, other):
+        return \
+            self.height == other.height and \
+            self.width == other.width and \
+            self.order_used == other.order_used and \
+            self.value == other.value and \
+            self.symbol == other.symbol
+
     def __str__(self):
         return f"CistercianNumber({self.value})"
 
@@ -48,6 +56,11 @@ class CistercianNumber(Symbol):
 
 
 def arabic_to_cistercian(arabic_number: int) -> CistercianNumber:
+    assert isinstance(arabic_number, int) or arabic_number == int(arabic_number), \
+        f"Unsupported input, only int supported, got {arabic_number}"
+
+    assert 0 <= arabic_number <= 9999, f"Number out of range, supported range is [0, 9999], got {arabic_number}"
+
     cistercian_number = CistercianNumber(height=SYMBOL_HEIGHT, width=SYMBOL_WIDTH)
     order = 0
     while arabic_number > 0:

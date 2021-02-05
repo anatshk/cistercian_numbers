@@ -57,12 +57,18 @@ class Symbol:
 class CistercianSymbol(Symbol):
     def __init__(self, height: int, width: int, is_zero: bool = False):
         super().__init__(height, width)
-        self.height = height
-        self.width = width
         self.third_height = height // 3
         self.mid_width = width // 2
         if not is_zero:  # all symbols have a central line
             self.add_central_full_vertical_line()
+
+    def __eq__(self, other):
+        return \
+            self.height == other.height and \
+            self.width == other.width and \
+            self.third_height == other.third_height and \
+            self.mid_width == other.mid_width and \
+            (self.get_symbol() == other.get_symbol()).all()
 
     def set_symbol(self, new_symbol: np.ndarray):
         self.symbol = new_symbol
@@ -140,15 +146,16 @@ class CistercianSymbol(Symbol):
         self._add_diagonal_line(start_h, end_h, start_v, end_v)
 
     def get_value(self, mapping: dict) -> int:
-        value = None
+        value_to_return = None
         for value, symbol in mapping.items():  # O(M) - always going over the same mapping --> O(1)
             diff_symbols = self.get_symbol() - symbol.get_symbol()
             if not diff_symbols.any():
+                value_to_return = value
                 break
 
-        if value is None:
+        if value_to_return is None:
             raise Exception(f'Unexpected symbol - does not match any symbol in existing mapping')
-        return value
+        return value_to_return
 
     def fliplr(self) -> "CistercianSymbol":
         """ flip the symbol left-right - return a copy """

@@ -88,3 +88,30 @@ class TestCistercianSymbol(unittest.TestCase):
         symbol_mapping = create_symbols(symbol_height=7, symbol_width=5)
         for val in [5, 70, 300, 6000, 0]:
             self.assertEqual(symbol_mapping[val].get_value(symbol_mapping), val)
+
+    def test_equal(self):
+        symbol_1 = CistercianSymbol(height=7, width=5)
+        symbol_1.add_horizontal_line(location_str=TOP, direction_str=RIGHT)
+
+        symbol_2 = CistercianSymbol(height=7, width=5)
+        symbol_2.add_horizontal_line(location_str=TOP, direction_str=RIGHT)
+
+        self.assertEqual(symbol_1, symbol_2)
+
+    def test_not_equal_size(self):
+        symbol_1 = CistercianSymbol(height=7, width=5)
+        symbol_1.add_horizontal_line(location_str=TOP, direction_str=RIGHT)
+
+        symbol_2 = CistercianSymbol(height=17, width=15)
+        symbol_2.add_horizontal_line(location_str=TOP, direction_str=RIGHT)
+
+        self.assertNotEqual(symbol_1, symbol_2)
+
+    def test_not_equal_symbol(self):
+        symbol_1 = CistercianSymbol(height=7, width=5)
+        symbol_1.add_horizontal_line(location_str=TOP, direction_str=RIGHT)
+
+        symbol_2 = CistercianSymbol(height=7, width=5)
+        symbol_2.add_horizontal_line(location_str=TOP, direction_str=LEFT)
+
+        self.assertNotEqual(symbol_1, symbol_2)
