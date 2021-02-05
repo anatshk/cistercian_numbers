@@ -9,3 +9,9 @@ This project is inspired by the following tweet:
 I'd like to use Numpy 2D arrays to represent the Cistercian number symbols and create a function that translates Arabic numerals to Cistercian symbols and back.
 
 Then, I'd like to try and train a small CNN to see if it can decipher the Cistercian number symbols.
+
+---
+
+***2021-02-05 Update***: run `show_cistercian_number.py` for an interactive CLI converting Arabic Numerals to Cistercian number symbols.
+Be prepared for unhandled exceptions for non-integers, or numbers outside of the [1-9999] range.
+Close figures to continue interacting with CLI.
