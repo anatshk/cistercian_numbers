@@ -30,8 +30,8 @@ class CistercianNumber(Symbol):
     def __str__(self):
         return f"CistercianNumber({self.value})"
 
-    def show(self):
-        self.symbol.show()
+    def show(self, **kwargs):
+        self.symbol.show(**kwargs)
 
     def get_symbol(self):
         return self.symbol.get_symbol()
@@ -39,9 +39,9 @@ class CistercianNumber(Symbol):
     def set_symbol(self, new_symbol: np.ndarray):
         self.symbol.set_symbol(new_symbol)
 
-    def add_symbol(self, symbol: CistercianSymbol):
+    def add_symbol(self, symbol: CistercianSymbol, symbol_mapping: dict = SYMBOL_MAPPING):
         """ Assumption - the symbol here is a valid singular symbol from mapping and not a combined symbol"""
-        symbol_value = symbol.get_value(SYMBOL_MAPPING)
+        symbol_value = symbol.get_value(symbol_mapping)
         if symbol_value:  # skip zeroes
             order = int(np.log10(symbol_value))
 
@@ -72,7 +72,7 @@ def arabic_to_cistercian(arabic_number: int, symbol_height: int = SYMBOL_HEIGHT,
         arabic_number = arabic_number // 10
         order += 1
         symbol_for_value = symbol_mapping[value]
-        cistercian_number.add_symbol(symbol_for_value)
+        cistercian_number.add_symbol(symbol_for_value, symbol_mapping)
         
     return cistercian_number
 

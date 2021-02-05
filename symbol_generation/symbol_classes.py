@@ -76,9 +76,12 @@ class CistercianSymbol(Symbol):
     def get_symbol(self):
         return self.symbol
 
-    def show(self):
+    def show(self, **kwargs):
         plt.imshow(1 - self.symbol, cmap='gray')
-        plt.show()
+        title = kwargs.get('title')
+        if title:
+            plt.title(title)
+        plt.show(block=True)
 
     def __repr__(self) -> str:
         return f"CistercianSymbol({self.height}, {self.width})"
