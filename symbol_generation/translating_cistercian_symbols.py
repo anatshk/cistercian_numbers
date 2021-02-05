@@ -101,7 +101,7 @@ def _find_symbols_contained_in_given_symbol(given_symbol: np.ndarray, symbol_map
                 # OR, candidate of this order already exists - override if current candidate is larger
                 symbol_candidates[candidate_order] = (value, curr_symbol_size)
 
-    return symbol_candidates
+    return [candidate[0] for candidate in symbol_candidates if candidate is not None]
 
 
 def cistercian_to_arabic(cistercian: CistercianNumber, symbol_mapping: dict) -> int:
@@ -112,11 +112,9 @@ def cistercian_to_arabic(cistercian: CistercianNumber, symbol_mapping: dict) -> 
     _validate_cistercian_number_size(cistercian, symbol_mapping)
 
     given_symbol = cistercian.get_symbol()
-    symbol_candidates = _find_symbols_contained_in_given_symbol(given_symbol, symbol_mapping)
+    symbol_candidate_values = _find_symbols_contained_in_given_symbol(given_symbol, symbol_mapping)
 
     # sum all candidate values
-    number = 0
-    for candidate_value in symbol_candidates:
-        number += candidate_value[0] if candidate_value is not None else 0
+    number = np.sum(symbol_candidate_values)
 
     return number
