@@ -6,8 +6,8 @@ import argparse
 from symbol_generation.symbol_mapping import create_symbols
 from symbol_generation.translating_cistercian_symbols import arabic_to_cistercian
 
-DEFAULT_HEIGHT = 7
-DEFAULT_WIDTH = 5
+DEFAULT_HEIGHT = 17
+DEFAULT_WIDTH = 15
 
 
 def main(number_to_convert):

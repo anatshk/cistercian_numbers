@@ -57,8 +57,8 @@ class Symbol:
 class CistercianSymbol(Symbol):
     def __init__(self, height: int, width: int, is_zero: bool = False):
         super().__init__(height, width)
-        self.third_height = height // 3
-        self.mid_width = width // 2
+        self.third_height = int(round(height / 3))
+        self.mid_width = int(round(width // 2))
         if not is_zero:  # all symbols have a central line
             self.add_central_full_vertical_line()
 
@@ -96,10 +96,11 @@ class CistercianSymbol(Symbol):
         step_h = int((int(start_h < end_h) - 1 / 2) * 2)  # convert 0/1 to -1/1
         step_v = int((int(start_v < end_v) - 1 / 2) * 2)  # convert 0/1 to -1/1
         range_h = range(start_h, end_h, step_h)
-        range_v = range(start_v, end_v, step_v)
-        for h, v in zip(range_h, range_v):
-            self.symbol[v, h] = 1
-        self.symbol[end_v, max(0, end_h-1)] = 1
+        v = start_v
+        for h in range_h:
+            if 0 <= v < self.symbol.shape[0]:
+                self.symbol[v, h] = 1
+                v += step_v
 
     def _get_height(self, height_str: str) -> int:
         if height_str == TOP:
@@ -141,7 +142,7 @@ class CistercianSymbol(Symbol):
         self._add_horizontal_line(start, end, location)
 
     def add_diagonal_line(self, start_height_on_middle: str = TOP, end_height: str = TOP_THIRD, direction_str: str = LEFT):
-        """ diagonals start from center and go outwards """
+        """ diagonals start from center and go outwards till edge """
         start_h = self._get_width(MIDDLE)
         end_h = self._get_width(direction_str)
         start_v = self._get_height(start_height_on_middle)

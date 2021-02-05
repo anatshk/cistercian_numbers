@@ -24,8 +24,8 @@ def create_symbols(symbol_height: int, symbol_width: int) -> dict:
     four.add_diagonal_line(start_height_on_middle=TOP_THIRD, end_height=TOP, direction_str=RIGHT)
 
     # 5
-    five = deepcopy(one)  # 5 is 1 with an additional diagonal line
-    five.add_diagonal_line(start_height_on_middle=TOP_THIRD, end_height=TOP, direction_str=RIGHT)
+    five = deepcopy(four)  # 5 is 4 with an additional horizontal line
+    five.add_horizontal_line(location_str=TOP, direction_str=RIGHT)
 
     # 6
     six = CistercianSymbol(height=symbol_height, width=symbol_width)
