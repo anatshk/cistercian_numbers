@@ -15,3 +15,7 @@ Then, I'd like to try and train a small CNN to see if it can decipher the Cister
 ***2021-02-05 Update***: run `show_cistercian_number.py` for an interactive CLI converting Arabic Numerals to Cistercian number symbols.
 Be prepared for unhandled exceptions for non-integers, or numbers outside of the [1-9999] range.
 Close figures to continue interacting with CLI.
+
+---
+
+***2021-02-06 Update***: A bit of a circular import, [here](https://curgen.gitlab.io/weekend-project-part-1/) is a post about this project, that also points here.
