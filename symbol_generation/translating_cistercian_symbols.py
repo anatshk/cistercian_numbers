@@ -42,17 +42,19 @@ class CistercianNumber(Symbol):
     def add_symbol(self, symbol: CistercianSymbol, symbol_mapping: dict = SYMBOL_MAPPING):
         """ Assumption - the symbol here is a valid singular symbol from mapping and not a combined symbol"""
         symbol_value = symbol.get_value(symbol_mapping)
-        if symbol_value:  # skip zeroes
-            order = int(np.log10(symbol_value))
+        if symbol_value == 0:  # skip zeroes
+            return
 
-            if self.order_used[order]:
-                raise Exception(f'Cannot add this symbol, already using order {order}, current value is {self.value}, '
-                                f'attempting to add {symbol_value}')
+        order = int(np.log10(symbol_value))
 
-            # no exception - we can add the symbol
-            self.symbol.set_symbol(np.maximum(self.symbol.get_symbol(), symbol.get_symbol()))
-            self.order_used[order] = True
-            self.value += symbol_value
+        if self.order_used[order]:
+            raise Exception(f'Cannot add this symbol, already using order {order}, current value is {self.value}, '
+                            f'attempting to add {symbol_value}')
+
+        # no exception - we can add the symbol
+        self.symbol.set_symbol(np.maximum(self.symbol.get_symbol(), symbol.get_symbol()))
+        self.order_used[order] = True
+        self.value += symbol_value
 
 
 def arabic_to_cistercian(arabic_number: int, symbol_height: int = SYMBOL_HEIGHT, symbol_width: int = SYMBOL_WIDTH,
