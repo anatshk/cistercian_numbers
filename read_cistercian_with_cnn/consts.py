@@ -3,7 +3,7 @@ Consts file for CNN training
 """
 # Data consts
 DATA_MIN_VALUE = 0
-DATA_MAX_VALUE = 9999
+DATA_MAX_VALUE = 9   # 9999 is max, lower values selected for quicker training
 DATA_MIN_HEIGHT = 7
 DATA_MAX_HEIGHT = 100
 DATA_MIN_WIDTH = 5
@@ -16,5 +16,5 @@ DENSE_LAYER_UNITS = 128
 DROPOUT_RATE = 0.2
 
 # Training consts
-BATCH_SIZE = 128
-EPOCHS = 5
+BATCH_SIZE = 512
+EPOCHS = 100

@@ -15,6 +15,7 @@ from read_cistercian_with_cnn.data_creation import CistercianImageGenerator
 #  - in that case, consider initializing the data generators with save_intermediate_mappings=False
 #  (either just the largest train generator or all of them)
 
+value_range = np.arange(consts.DATA_MIN_VALUE, consts.DATA_MAX_VALUE)
 height_range = np.arange(consts.DATA_MIN_HEIGHT, consts.DATA_MAX_HEIGHT + 1)
 width_range = np.arange(consts.DATA_MIN_WIDTH, consts.DATA_MAX_WIDTH + 1)
 
@@ -32,12 +33,14 @@ validation_width, test_width = split_datasets(non_train_width, test_size=0.5, tr
 # train data - on all numbers, but part of the available input sizes
 train_data_generator = CistercianImageGenerator(batch_size=consts.BATCH_SIZE, network_input_size=consts.INPUT_SIZE,
                                                 min_value=consts.DATA_MIN_VALUE, max_value=consts.DATA_MAX_VALUE,
-                                                list_of_heights=train_height, list_of_widths=train_width)
+                                                list_of_heights=train_height, list_of_widths=train_width,
+                                                list_of_values=value_range)
 
 # validation data
 validation_data_generator = CistercianImageGenerator(batch_size=consts.BATCH_SIZE, network_input_size=consts.INPUT_SIZE,
                                                      min_value=consts.DATA_MIN_VALUE, max_value=consts.DATA_MAX_VALUE,
-                                                     list_of_heights=validation_height, list_of_widths=validation_width)
+                                                     list_of_heights=validation_height, list_of_widths=validation_width,
+                                                     list_of_values=value_range)
 
 # fit the MNIST-like model
 model = tf.keras.models.Sequential([
@@ -62,7 +65,8 @@ performance_train = model.evaluate(x=train_data_generator, verbose=2, return_dic
 # create data generators for remaining height and width combinations
 test_data_generator = CistercianImageGenerator(batch_size=consts.BATCH_SIZE, network_input_size=consts.INPUT_SIZE,
                                                min_value=consts.DATA_MIN_VALUE, max_value=consts.DATA_MAX_VALUE,
-                                               list_of_heights=test_height, list_of_widths=test_width)
+                                               list_of_heights=test_height, list_of_widths=test_width,
+                                               list_of_values=value_range)
 
 # perform evaluations on each of the test generators
 performance_test_small = model.evaluate(test_data_generator, verbose=2, return_dict=True)
