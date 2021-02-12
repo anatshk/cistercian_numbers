@@ -1,3 +1,5 @@
-matplotlib
-numpy
+matplotlib~=3.3.4
+numpy~=1.19.5
 pytest
+tensorflow~=2.4.1
+scikit-image~=0.18.1
