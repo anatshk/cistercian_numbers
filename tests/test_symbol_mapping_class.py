@@ -44,10 +44,3 @@ class TestCistercianMapping(unittest.TestCase):
         cm = CistercianMapping(symbol_height=7, symbol_width=5)
         cm.create_full()
         self.assertEqual(cm.mapping, self.mapping_for_comparison)
-
-
-
-    def test_multiply_symbol_by_10(self):
-        cm = CistercianMapping(symbol_height=7, symbol_width=5)
-
-

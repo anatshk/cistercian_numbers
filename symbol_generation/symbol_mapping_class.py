@@ -9,6 +9,7 @@ from symbol_generation.symbol_classes import CistercianSymbol, TOP, TOP_THIRD, R
 
 # assuming we want to keep all previous usages of "symbol_mapping" as dicts,
 #   create relevant dict-like methods - https://stackoverflow.com/questions/4014621/a-python-class-that-acts-like-dict
+from symbol_generation.symbol_mapping import show_mapping
 
 
 class CistercianMapping:
@@ -149,3 +150,6 @@ class CistercianMapping:
 
     def __iter__(self):
         return iter(self.mapping)
+
+    def show_mapping(self):
+        show_mapping(self)
