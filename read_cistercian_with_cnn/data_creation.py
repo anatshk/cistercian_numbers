@@ -7,11 +7,14 @@ for tf  examples
 based on example in https://www.tensorflow.org/api_docs/python/tf/keras/utils/Sequence
 """
 import tensorflow as tf
+from skimage.filters import threshold_otsu
 from skimage.transform import resize
 import numpy as np
 import math
 
 from read_cistercian_with_cnn import consts
+from symbol_generation.symbol_mapping_class import CistercianMapping
+from symbol_generation.translating_cistercian_symbols import arabic_to_cistercian
 
 
 class CistercianImageGenerator(tf.keras.utils.Sequence):
@@ -39,12 +42,36 @@ class CistercianImageGenerator(tf.keras.utils.Sequence):
         self.y = n.flatten()
         self.x_dims = list(zip(h.flatten(), w.flatten()))
 
+        self.mappings_dict = dict()
+
     def __len__(self):
         return math.ceil(len(self.y) / self.batch_size)
 
     def _create_x_arrays_for_training(self, numbers, dimension_tuples):
-        # TODO: create numbers on the fly
-        pass
+        arrays_for_training = np.empty(shape=(self.network_input_size, self.network_input_size, len(numbers)))
+
+        # go over all numbers in batch
+        for ix, (number, (height, width)) in enumerate(zip(numbers, dimension_tuples)):
+            if (height, width) not in self.mappings_dict:
+                # add a cistercian mapping of relevant size (lazy - instead of pre-creating)
+                self.mappings_dict[(height, width)] = CistercianMapping(symbol_height=height, symbol_width=width)
+
+            # convert number to symbol
+            cistercian_number = arabic_to_cistercian(number, symbol_height=height, symbol_width=width,
+                                                     symbol_mapping=self.mappings_dict[(height, width)])
+            cistercian_symbol = cistercian_number.get_symbol()
+
+            # resize to desired size
+            arr_for_train = resize(cistercian_symbol, output_shape=(self.network_input_size, self.network_input_size))
+
+            # convert to binary using Otsu
+            thresh = threshold_otsu(arr_for_train)
+            arr_for_train_thresholded = np.zeros_like(arr_for_train)
+            arr_for_train_thresholded[arr_for_train > thresh] = 1
+
+            arrays_for_training[:, :, ix] = arr_for_train_thresholded
+
+        return arrays_for_training
 
     def __getitem__(self, idx):
         batch_x_dims = self.x_dims[idx * self.batch_size:(idx + 1) * self.batch_size]

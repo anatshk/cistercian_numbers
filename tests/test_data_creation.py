@@ -43,14 +43,10 @@ class TestCistercianImageGenerator(unittest.TestCase):
         np.testing.assert_array_equal(expected_y, cig.y)
         self.assertEqual(expected_x_dims, cig.x_dims)
 
-    @unittest.skip("unavailable until refactoring the symbol mapping into a class and using it there")
     def test_create_x_arrays_for_training(self):
         cig = CistercianImageGenerator(batch_size=2, network_input_size=16)
-        batch_x, batch_y = cig._create_x_arrays_for_training(numbers=np.array(1, 2004, 389, 54),
-                                                             dimension_tuples=[(7, 5), (17, 15), (30, 50), (7, 5)])
+        batch_x = cig._create_x_arrays_for_training(numbers=np.array([1, 2004, 389, 54]),
+                                                    dimension_tuples=[(7, 5), (17, 15), (30, 50), (7, 5)])
 
-        self.assertEqual(batch_x.shape, (28, 28, 4))
-        self.assertEqual(batch_y.shape, (4, ))
-
-
-
+        self.assertEqual(batch_x.shape, (16, 16, 4))
+        # the images returned here were visually examined to show that they make sense

@@ -115,7 +115,8 @@ class CistercianMapping:
             self._add_advanced_mappings(key)
 
     def __getitem__(self, key):
-        assert isinstance(key, int), f'Unsupported number {key}, expecting an integer'
+        assert isinstance(key, (int, np.int, np.int8, np.int16, np.int32, np.int64)), \
+            f'Unsupported number {key}, expecting an integer'
         assert key in range(0, 11) or key in range(10, 100, 10) or key in range(100, 1000, 100) \
                or key in range(1000, 10000, 1000), f'Unsupported number {key}, number should be 0-9 or a ' \
                                                    f'multiplication of 10/100/1000 of 1-9'
