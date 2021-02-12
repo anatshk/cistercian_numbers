@@ -19,46 +19,59 @@ from symbol_generation.translating_cistercian_symbols import arabic_to_cistercia
 
 class CistercianImageGenerator(tf.keras.utils.Sequence):
     def __init__(self, batch_size, network_input_size=consts.INPUT_SIZE,
-                 min_value=consts.DATA_MIN_VALUE, max_value=consts.DATA_MAX_VALUE,
-                 min_height=consts.DATA_MIN_HEIGHT, max_height=consts.DATA_MAX_HEIGHT,
-                 min_width=consts.DATA_MIN_WIDTH, max_width=consts.DATA_MAX_WIDTH):
+                 min_value=consts.DATA_MIN_VALUE, max_value=consts.DATA_MAX_VALUE, list_of_values=None,
+                 min_height=consts.DATA_MIN_HEIGHT, max_height=consts.DATA_MAX_HEIGHT, list_of_heights=None,
+                 min_width=consts.DATA_MIN_WIDTH, max_width=consts.DATA_MAX_WIDTH, list_of_widths=None,
+                 save_intermediate_mappings=True):
 
         self.batch_size = batch_size
         self.network_input_size = network_input_size
-        self.min_value = min_value
-        self.max_value = max_value
-        self.min_height = min_height
-        self.max_height = max_height
-        self.min_width = min_width
-        self.max_width = max_width
+
+        self.list_of_values = list(range(min_value, max_value + 1)) if list_of_values is None \
+            else sorted(list_of_values)
+        self.list_of_heights = list(range(min_height, max_height + 1)) if list_of_heights is None \
+            else sorted(list_of_heights)
+        self.list_of_widths = list(range(min_width, max_width + 1)) if list_of_widths is None \
+            else sorted(list_of_widths)
+
+        self.save_intermediate_mappings = save_intermediate_mappings
+        self.mappings_dict = dict()
 
         self._create_all_permutations()
 
     def _create_all_permutations(self):
-        numbers = np.arange(self.min_value, self.max_value + 1, 1)
-        height = np.arange(self.min_height, self.max_height + 1, 1)
-        width = np.arange(self.min_width, self.max_width + 1, 1)
+        numbers = np.array(self.list_of_values, dtype=np.uint8)
+        height = np.array(self.list_of_heights, dtype=np.uint8)
+        width = np.array(self.list_of_widths, dtype=np.uint8)
         n, h, w = np.meshgrid(numbers, height, width)
         self.y = n.flatten()
         self.x_dims = list(zip(h.flatten(), w.flatten()))
 
-        self.mappings_dict = dict()
-
     def __len__(self):
         return math.ceil(len(self.y) / self.batch_size)
+
+    def _get_symbols_mapping(self, height, width):
+        if not self.save_intermediate_mappings:
+            # we're NOT saving intermediate mappings
+            return CistercianMapping(symbol_height=height, symbol_width=width)
+
+        # we're saving intermediate mappings
+        if (height, width) not in self.mappings_dict:
+            # add a cistercian mapping of relevant size (lazy - instead of pre-creating)
+            self.mappings_dict[(height, width)] = CistercianMapping(symbol_height=height, symbol_width=width)
+
+        return self.mappings_dict[(height, width)]
 
     def _create_x_arrays_for_training(self, numbers, dimension_tuples):
         arrays_for_training = np.empty(shape=(self.network_input_size, self.network_input_size, len(numbers)))
 
         # go over all numbers in batch
         for ix, (number, (height, width)) in enumerate(zip(numbers, dimension_tuples)):
-            if (height, width) not in self.mappings_dict:
-                # add a cistercian mapping of relevant size (lazy - instead of pre-creating)
-                self.mappings_dict[(height, width)] = CistercianMapping(symbol_height=height, symbol_width=width)
+            mapping = self._get_symbols_mapping(height=height, width=width)
 
             # convert number to symbol
             cistercian_number = arabic_to_cistercian(number, symbol_height=height, symbol_width=width,
-                                                     symbol_mapping=self.mappings_dict[(height, width)])
+                                                     symbol_mapping=mapping)
             cistercian_symbol = cistercian_number.get_symbol()
 
             # resize to desired size
