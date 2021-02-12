@@ -66,7 +66,7 @@ def create_symbols(symbol_height: int, symbol_width: int) -> dict:
     eight_hundred = eight.flipud()
     nine_hundred = nine.flipud()
 
-    # 1000-9000 are flips left-right of 10-90
+    # 1000-9000 are flips up-down of 10-90
     thousand = ten.flipud()
     two_thousand = twenty.flipud()
     three_thousand = thirty.flipud()
