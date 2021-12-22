@@ -10,7 +10,7 @@ DEFAULT_HEIGHT = 17
 DEFAULT_WIDTH = 15
 
 
-def main(number_to_convert):
+def main(number_to_convert, height, width, symbol_mapping):
     cistercian = arabic_to_cistercian(arabic_number=number_to_convert, symbol_height=height, symbol_width=width,
                                       symbol_mapping=symbol_mapping)
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     stop_ui = False
     while not stop_ui:
         number = int(input("Enter a number to convert to Cistercian representation (int, [0, 9999]):"))
-        main(number_to_convert=number)
+        main(number_to_convert=number, height=height, width=width, symbol_mapping=symbol_mapping)
         stop_ui = input("Do you want to try another number? (y/n)") == 'n'
 
     print("Thanks for playing!")
