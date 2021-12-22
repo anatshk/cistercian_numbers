@@ -38,6 +38,8 @@ for ix, row in df.iterrows():
     symbol_mapping = create_symbols(symbol_height=height, symbol_width=width)
     show_mapping(symbol_mapping)
 
+    # TODO: instead of one number 1993, add 4723, 6859, 7085, 9433, 3333, 4444, 5555, 9999
+    #  use num = arabic_to_cistercian and then use 1 - num.symbol.symbol ? and concatenate numpy arrays --> plt.show
     main(number_to_convert=1993, height=height, width=width, symbol_mapping=symbol_mapping)
 
     does_this_look_good = input('does this look good? (Y)es, (N)o, Stop increasing (W)idth, (S)top and save: ').lower()
@@ -55,9 +57,8 @@ for ix, row in df.iterrows():
 
     df.to_csv(pth_save_file, index=False)
 
-
-
-
-
-
-
+# TODO: run the code until every height and width combination is filled
+# TODO: analyze ratio between all good combinations (IS_GOOD = 1)
+# TODO: make changes to CistercianSymbol class to only accept height and calculate with according to the ratio
+# TODO: then create a dataset of different sizes and train model that takes the number, splits it into quarters,
+#  flips accordingly and detects digits - then returns the digit * its quarter order
